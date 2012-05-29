@@ -9,15 +9,63 @@ dojo.require "dijit.Toolbar"
 
 
 dojo.declare(
-  'app.Menubar'
-  [dijit._Widget, dijit._Templated]
+	'app.Menubar'
+	[dijit._Widget, dijit._Templated, app.Common]
 
-  widgetsInTemplate: true
-  templateString: dojo.cache('app', "templates/Menubar.html")
+	app: 'app.Menubar'
+	widgetsInTemplate: true
+	templateString: dojo.cache('app', "templates/Menubar.html")
+	buttons: {}										# ボタン要素リスト
+	contents:											# コンテンツ一覧。これを基にボタンを生成する
+		top:
+			label: 'トップ'
+			icon: 'dijitIcon dijitIconFolderOpen'
+		sheet:
+			label: '申請書確認'
+			icon: 'dijitIcon dijitLeaf'
+		bbs:
+			label: '掲示板'
+			icon: 'dijitIcon dijitIconTable'
+		data:
+			label: 'データ管理'
+			icon: 'dijitIcon dijitIconUndo'
+	constructor: ->
+		@inherited arguments
 
-  constructor: ->
-    @inherited arguments
-    console.log 'テンプレートにボタン配置するよりも、スペースのみ配置して、postCreateで要素を生成するとかのほうがいいかも。'
+	postCreate: ->
+		@setButtons()
+		@setSubscribe()
+		dojo.publish('app/Hash/addCallback', ['app/Menubar/onHashChange'])
+
+	setButtons: ->
+		# ボタンを作成する
+		for key,value of @contents
+			@buttons[key] = new app.MenubarButton(
+				label: value.label
+				iconClass: value.icon
+				style: 'cursor:pointer;'
+			).placeAt(@buttonSpace)
+		# イベントを付与する
+		for key,button of @buttons
+			dojo.connect button, 'onClick', @, do->
+				_key = key
+				-> dojo.publish('app/Hash/changeHash', [mode:_key])
+
+	# APIをセットアップする
+	setSubscribe: ->
+		handles = []
+		handles.push dojo.subscribe('app/Menubar/onHashChange', @, @onHashChange)
+		h = dojo.connect(@, 'uninitialize', @, ->
+			dojo.disconnect(h)
+			for handle in handles
+				dojo.unsubscribe(handle)
+		)
+
+	# ハッシュ更新時にコールされる
+	onHashChange: (hash)->
+		for key,button of @buttons
+			button.setColorType('normal')
+		@buttons[hash.mode].setColorType('selected')
 
 
 )

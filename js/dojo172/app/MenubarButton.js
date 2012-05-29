@@ -5,27 +5,13 @@ dojo.provide("app.MenubarButton");
 dojo.require("dijit.form.Button");
 
 dojo.declare("app.MenubarButton", [dijit.form.Button], {
-  enableColor: "#003d6c",
-  nowColor: "#CC0000",
-  disabledFlag: null,
+  normal: "#003d6c",
+  selected: "#CC0000",
   postCreate: function() {
     this.inherited(arguments);
-    return this.titleNode.style.color = this.enableColor;
+    return this.setColorType('normal');
   },
-  setNowButton: function() {
-    if (this.dojoAttachPoint.indexOf(HASH.hash.mode) !== -1) {
-      return this.titleNode.style.color = this.nowColor;
-    } else {
-      return this.setDisabled(this.disabledFlag);
-    }
-  },
-  setDisabled: function(flag) {
-    this.inherited(arguments);
-    this.disabledFlag = flag;
-    if (this.disabledFlag) {
-      return this.titleNode.style.color = null;
-    } else {
-      return this.titleNode.style.color = this.enableColor;
-    }
+  setColorType: function(type) {
+    return this.titleNode.style.color = this[type];
   }
 });

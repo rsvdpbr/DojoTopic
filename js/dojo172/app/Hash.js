@@ -4,23 +4,29 @@ dojo.provide("app.Hash");
 
 dojo.require("dojo.hash");
 
-dojo.declare("app.Hash", [], {
+dojo.declare("app.Hash", [app.Common], {
+  app: 'app.Hash',
+  callback: [],
   hash: null,
   constructor: function() {
-    this.setSubscribe();
+    this.inherited(arguments);
+    this._getTableData('members', function(data) {
+      return console.log(data);
+    });
     if (dojo.hash() === '') {
-      return dojo.publish('app/Hash/changeHash', [
-        {
-          mode: 'top'
-        }
-      ]);
+      this.changeHash({
+        mode: 'top'
+      });
     }
+    return this.setSubscribe();
   },
   setSubscribe: function() {
     var h, handles;
     handles = [];
     handles.push(dojo.subscribe('/dojo/hashchange', this, this.onHashChange));
+    handles.push(dojo.subscribe('app/Hash/addCallback', this, this.addCallback));
     handles.push(dojo.subscribe('app/Hash/changeHash', this, this.changeHash));
+    handles.push(dojo.subscribe('app/Hash/getHash', this, this.getHash));
     return h = dojo.connect(this, 'uninitialize', this, function() {
       var handle, _i, _len, _results;
       dojo.disconnect(h);
@@ -32,7 +38,26 @@ dojo.declare("app.Hash", [], {
       return _results;
     });
   },
+  addCallback: function(str) {
+    this.callback.push(str);
+    this._updateHashVar();
+    return dojo.publish(str, [this.hash]);
+  },
+  getHash: function(publish) {
+    return dojo.publish(publish, [this.hash]);
+  },
   onHashChange: function() {
+    var i, _i, _len, _ref, _results;
+    this._updateHashVar();
+    _ref = this.callback;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      i = _ref[_i];
+      _results.push(dojo.publish(i, [this.hash]));
+    }
+    return _results;
+  },
+  _updateHashVar: function() {
     var i, tmp, _i, _len, _ref, _results;
     this.hash = {};
     _ref = dojo.hash().split("&");
@@ -43,7 +68,7 @@ dojo.declare("app.Hash", [], {
         tmp = i.split('=');
         _results.push(this.hash[tmp[0]] = tmp[1]);
       } else {
-        _results.push(void 0);
+        _results.push(this.hash[i] = 'NO-VALUE');
       }
     }
     return _results;
@@ -57,6 +82,8 @@ dojo.declare("app.Hash", [], {
       if (i.indexOf('=') !== -1) {
         tmp = i.split('=');
         hash[tmp[0]] = tmp[1];
+      } else {
+        hash[i] = '';
       }
     }
     for (key in status) {
@@ -66,7 +93,13 @@ dojo.declare("app.Hash", [], {
     tmp = [];
     for (key in hash) {
       value = hash[key];
-      tmp.push(key + '=' + value);
+      if (value != null) {
+        if (value !== '') {
+          tmp.push(key + '=' + value);
+        } else {
+          tmp.push(key);
+        }
+      }
     }
     hash = tmp.join('&');
     return location.hash = hash;
