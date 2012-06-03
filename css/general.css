@@ -43,15 +43,52 @@ div.appDivMenu {
 }
 div.appDivMenu span {
 	color: #003D4C;
-	text-decoration: underline;
 	cursor: pointer;
+}
+div.appDivMenu span:hover {
+	text-decoration: underline;
 }
 div.appDivBody {
 	padding: 0.8em 2em;
 	line-height: 1.5em;
-	/* border: 1px #999 dashed; */
-	/* background: #f2f2fd */
 	border: 1px #999 dashed;
 	background: #f6f6fc;
 }
+
+/* トピック記事 */
+div.appPost {
+	width:100%;
+	margin:12px 0 12px;
+	border: 1px #ccc solid;
+	background: #fafafa;
+}
+div.appPostHead {
+	color: #24D;
+	padding: 2px 12px 4px;
+	margin:4px 16px;
+	border-bottom: 1px dashed #999;
+}
+div.appPostBody {
+	padding: 4px 12px;
+}
+div.appPostBody blockquote {
+	margin: 0 40px;
+	border: none;
+	padding: 0;
+}
+span.appPostDatetime {
+	float:right;
+	padding:6px 16px 4px;
+}
+
+/* 書き込みエリア */
+div.appTopicUnitWrite {
+	margin: 12px 0 30px;
+	padding: 0 50px;
+}
+div.appTopicUnitButtons {
+	margin: 4px 0 8px;
+	text-align: center;
+}
+
 

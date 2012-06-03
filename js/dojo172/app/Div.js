@@ -9,6 +9,7 @@ dojo.require('dijit._Templated');
 dojo.declare('app.Div', [dijit._Widget, dijit._Templated], {
   widgetsInTemplate: true,
   templateString: dojo.cache('app', 'templates/Div.html'),
+  body: '',
   style: 'display:none;',
   constructor: function() {
     return this.inherited(arguments);
@@ -16,10 +17,7 @@ dojo.declare('app.Div', [dijit._Widget, dijit._Templated], {
   postCreate: function() {
     var _this = this;
     this.inherited(arguments);
-    if (this.sheetMenuEnable) {
-      $(this.btBookmark).bind('click', function() {
-        return console.log('add to bookmark folder');
-      });
+    if (this.toggle) {
       $(this.btToggle).bind('click', function() {
         if ($(_this.divBody).css('display') === 'none') {
           $(_this.divBody).slideDown(250);
@@ -29,13 +27,20 @@ dojo.declare('app.Div', [dijit._Widget, dijit._Templated], {
           return $(_this.btToggle).text('[show]');
         }
       });
-      return $(this.btClose).bind('click', function() {
+    } else {
+      $(this.btToggle).remove();
+    }
+    if (this.close) {
+      $(this.btClose).bind('click', function() {
         return $(_this.top).slideUp(300, function() {
           return _this.destroyRendering();
         });
       });
     } else {
-      return $(this.sheetMenu).empty();
+      $(this.btClose).remove();
+    }
+    if (this.body === '') {
+      return $(this.divBody).remove();
     }
   },
   startup: function() {

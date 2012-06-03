@@ -16,23 +16,16 @@ dojo.declare('app.Menubar', [dijit._Widget, dijit._Templated, app.Common], {
   templateString: dojo.cache('app', "templates/Menubar.html"),
   buttons: {},
   contents: {
-    top: {
-      label: 'トップ',
+    topic: {
+      label: 'トピック',
       icon: 'dijitIcon dijitIconFolderOpen'
     },
-    sheet: {
-      label: '申請書確認',
-      icon: 'dijitIcon dijitLeaf'
-    },
-    bbs: {
-      label: '掲示板',
-      icon: 'dijitIcon dijitIconTable'
-    },
-    data: {
-      label: 'データ管理',
+    login: {
+      label: 'ログイン',
       icon: 'dijitIcon dijitIconUndo'
     }
   },
+  userData: null,
   constructor: function() {
     return this.inherited(arguments);
   },
@@ -74,6 +67,7 @@ dojo.declare('app.Menubar', [dijit._Widget, dijit._Templated, app.Common], {
     var h, handles;
     handles = [];
     handles.push(dojo.subscribe('app/Menubar/onHashChange', this, this.onHashChange));
+    handles.push(dojo.subscribe('app/Menubar/setUser', this, this.setUser));
     return h = dojo.connect(this, 'uninitialize', this, function() {
       var handle, _i, _len, _results;
       dojo.disconnect(h);
@@ -93,5 +87,11 @@ dojo.declare('app.Menubar', [dijit._Widget, dijit._Templated, app.Common], {
       button.setColorType('normal');
     }
     return this.buttons[hash.mode].setColorType('selected');
+  },
+  setUser: function(user) {
+    console.log(user);
+    this.userData = user;
+    $(this.userSpace).text('login-user : ' + user.username);
+    return this.buttons.login.setLabel('ログインメニュー');
   }
 });

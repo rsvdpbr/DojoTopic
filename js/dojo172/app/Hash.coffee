@@ -13,12 +13,9 @@ dojo.declare(
 
 	constructor: ()->
 		@inherited arguments
-		@_getTableData('members', (data)->
-			console.log data
-		)
 		# @ 各コールバックは登録時にも呼ばれるため、初期値入力では呼ばれないよう、先に初期値を設定する
 		if dojo.hash() == ''
-			@changeHash(mode:'top')
+			@changeHash(mode:'topic')
 		@setSubscribe()
 
 	# APIをセットアップする
@@ -66,7 +63,7 @@ dojo.declare(
 			if i.indexOf('=') != -1
 				tmp =i.split('=')
 				hash[tmp[0]] = tmp[1]
-			else
+			else if i != ''
 				hash[i] = ''
 		# @ 既存ハッシュ文字列にマージ
 		for key,value of status

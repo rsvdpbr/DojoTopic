@@ -57,43 +57,41 @@ dojo.declare(
 			return dojo.publish('app/Hash/changeHash', [register:''])
 		# ログイン処理
 		if @components.username.isValid() and @components.password.isValid()
-			data = @components.username.getValue()+'@'+@components.password.getValue()
+			data =
+				username: @components.username.getValue()
+				passwd: @components.password.getValue()
 			that = @
 			dojo.xhrPost
-				url: 'php/ctrlUser.php'
+				url: 'php/access.php'
 				handleAs: 'json'
 				content:
+					class: 'login'
 					method: 'getUserData'
-					value: data
+					value: dojo.toJson(data)
 				load: (data)->
-					if data == 'user-error'
-						that.buttonInitialize(['username','password'])
-					else if data == 'pass-error'
-						that.buttonInitialize(['password'])
-					else
+					if typeof data == 'object'
 						that.data = data
 						that.onExecute()
+					else
+						console.log 'failure'
 				error: (error)->
 					console.log 'app.LoginDialog->authentication [error] ', error
 
-	buttonInitialize: (node)->
-		for i in node
-			@components[i].setValue('')
-			@components[i].isValid()
-
 	onShow: ->
-		$(@closeButtonNode).hide()
+		# $(@closeButtonNode).hide()
 		@inherited arguments
 		dojo.publish('app/App/layerAllShow')
 		dojo.publish('app/App/layerFadeIn')
 
 	onHide: ->
 		@inherited arguments
-		if @data?
-			dojo.publish('app/App/layerAllHide')
-			dojo.publish('app/App/layerFadeOut')
+		dojo.publish('app/App/layerAllHide')
+		dojo.publish('app/App/layerFadeOut')
 
 	getData: ->
-		return @data
+		if @data?
+			return @data
+		else
+			return false
 
 )

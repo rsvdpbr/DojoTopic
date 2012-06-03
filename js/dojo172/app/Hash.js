@@ -10,12 +10,9 @@ dojo.declare("app.Hash", [app.Common], {
   hash: null,
   constructor: function() {
     this.inherited(arguments);
-    this._getTableData('members', function(data) {
-      return console.log(data);
-    });
     if (dojo.hash() === '') {
       this.changeHash({
-        mode: 'top'
+        mode: 'topic'
       });
     }
     return this.setSubscribe();
@@ -82,7 +79,7 @@ dojo.declare("app.Hash", [app.Common], {
       if (i.indexOf('=') !== -1) {
         tmp = i.split('=');
         hash[tmp[0]] = tmp[1];
-      } else {
+      } else if (i !== '') {
         hash[i] = '';
       }
     }

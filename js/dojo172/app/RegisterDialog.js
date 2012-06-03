@@ -84,29 +84,21 @@ dojo.declare('app.RegisterDialog', [dijit.Dialog, app.Common], {
     }
     if (flag) {
       data = {
-        user: this.components.username.getValue(),
-        password: this.components.password.getValue(),
-        name: this.components.name.getValue()
+        username: this.components.username.getValue(),
+        passwd: this.components.password.getValue(),
+        display_name: this.components.name.getValue()
       };
-      console.log(data);
       that = this;
       return dojo.xhrPost({
-        url: 'php/ctrlUser.php',
+        url: 'php/access.php',
         handleAs: 'json',
         content: {
+          "class": 'login',
           method: 'addUser',
           value: dojo.toJson(data)
         },
         load: function(data) {
-          console.log(data);
-          if (data === 'invalid-error') {
-            return console.log('使用不可文字列が含まれている。', data);
-          } else if (data === 'double-error') {
-            return console.log('ユーザ名重複', data);
-          } else {
-            that.data = data;
-            return that.onExecute();
-          }
+          return console.log(data);
         },
         error: function(error) {
           return console.log('app.LoginDialog->authentication [error] ', error);

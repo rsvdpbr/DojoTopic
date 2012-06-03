@@ -7,10 +7,9 @@ dojo.require 'app.DataManager'
 dojo.require 'app.Menubar'
 dojo.require 'app.Div'
 
-dojo.require 'app.Top'
-dojo.require 'app.Sheet'
-dojo.require 'app.Bbs'
-dojo.require 'app.Data'
+dojo.require 'app.Topic'
+dojo.require 'app.Register'
+dojo.require 'app.Login'
 
 dojo.require 'dijit.layout.BorderContainer'
 dojo.require 'dijit.layout.StackContainer'
@@ -24,6 +23,7 @@ dojo.declare(
 	YEAR: null										# 年度
 	hash: null										# ハッシュ。sub-pubで扱う
 	data: null										# データクラス
+	mode: null										# 現在のモード
 	components: []								# 要素リスト
 	layerCount: 0									# レイヤーカウンタ
 	constructor: (YEAR)->
@@ -33,7 +33,6 @@ dojo.declare(
 		@setSubscribe()
 		@setLayout()
 		@data = new app.DataManager()
-	afterLoginProcess: ->
 		dojo.publish('app/Hash/addCallback', ['app/App/onHashChange'])
 
 	# 画面をセットアップする
@@ -76,10 +75,12 @@ dojo.declare(
 		handles.push dojo.subscribe 'app/App/afterLoginProcess', @, @afterLoginProcess
 		handles.push dojo.subscribe 'app/App/layerFadeOut', @, ->
 			@layerCount--
+			console.log 'out',@layerCount
 			if @layerCount == 0
 				$('#layer').fadeOut(250)
 		handles.push dojo.subscribe 'app/App/layerFadeIn', @, ->
 			@layerCount++
+			console.log 'in',@layerCount
 			$('#layer').show()
 		handles.push dojo.subscribe 'app/App/layerAllHide', @, ->
 			$('#layerAll').hide()
@@ -94,6 +95,8 @@ dojo.declare(
 
 	# ハッシュ更新時にコールされる
 	onHashChange: (hash)->
+		if @mode == hash.mode then return false
+		@mode = hash.mode
 		dojo.publish('app/App/layerFadeIn')
 		# 未ロードの場合、新規作成
 		if !@components.innerContents[hash.mode]?
@@ -102,14 +105,12 @@ dojo.declare(
 				region: 'center'
 				gBorder: 'border:1px #ccccdc solid;'
 				gBackground: 'background:#fdfdfe;'
-			if hash.mode == 'top'
-				@components.innerContents[hash.mode] = new app.Top(obj)
-			else if hash.mode == 'sheet'
-				@components.innerContents[hash.mode] = new app.Sheet(obj)
-			else if hash.mode == 'bbs'
-				@components.innerContents[hash.mode] = new app.Bbs(obj)
-			else if hash.mode == 'data'
-				@components.innerContents[hash.mode] = new app.Data(obj)
+			if hash.mode == 'topic'
+				@components.innerContents[hash.mode] = new app.Topic(obj)
+			else if hash.mode == 'register'
+				@components.innerContents[hash.mode] = new app.Register(obj)
+			else if hash.mode == 'login'
+				@components.innerContents[hash.mode] = new app.Login(obj)
 			@components.contents.addChild(@components.innerContents[hash.mode])
 		# 表示
 		@components.contents.selectChild(@components.innerContents[hash.mode])

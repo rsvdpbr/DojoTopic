@@ -75,26 +75,26 @@ dojo.declare(
 		if !@components.name.isValid() then flag = false
 		if flag
 			data =
-				user: @components.username.getValue()
-				password: @components.password.getValue()
-				name: @components.name.getValue()
-			console.log data
+				username: @components.username.getValue()
+				passwd: @components.password.getValue()
+				display_name: @components.name.getValue()
 			that = @
 			dojo.xhrPost
-				url: 'php/ctrlUser.php'
+				url: 'php/access.php'
 				handleAs: 'json'
 				content:
+					class: 'login'
 					method: 'addUser'
 					value: dojo.toJson(data)
 				load: (data)->
 					console.log data
-					if data == 'invalid-error'
-						console.log '使用不可文字列が含まれている。',data
-					else if data == 'double-error'
-						console.log 'ユーザ名重複',data
-					else
-						that.data = data
-						that.onExecute()
+					# if data == 'invalid-error'
+					# 	console.log '使用不可文字列が含まれている。',data
+					# else if data == 'double-error'
+					# 	console.log 'ユーザ名重複',data
+					# else
+					# 	that.data = data
+					# 	that.onExecute()
 				error: (error)->
 					console.log 'app.LoginDialog->authentication [error] ', error
 

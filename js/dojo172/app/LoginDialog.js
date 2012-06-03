@@ -61,23 +61,25 @@ dojo.declare('app.LoginDialog', [dijit.Dialog, app.Common], {
       ]);
     }
     if (this.components.username.isValid() && this.components.password.isValid()) {
-      data = this.components.username.getValue() + '@' + this.components.password.getValue();
+      data = {
+        username: this.components.username.getValue(),
+        passwd: this.components.password.getValue()
+      };
       that = this;
       return dojo.xhrPost({
-        url: 'php/ctrlUser.php',
+        url: 'php/access.php',
         handleAs: 'json',
         content: {
+          "class": 'login',
           method: 'getUserData',
-          value: data
+          value: dojo.toJson(data)
         },
         load: function(data) {
-          if (data === 'user-error') {
-            return that.buttonInitialize(['username', 'password']);
-          } else if (data === 'pass-error') {
-            return that.buttonInitialize(['password']);
-          } else {
+          if (typeof data === 'object') {
             that.data = data;
             return that.onExecute();
+          } else {
+            return console.log('failure');
           }
         },
         error: function(error) {
@@ -86,30 +88,21 @@ dojo.declare('app.LoginDialog', [dijit.Dialog, app.Common], {
       });
     }
   },
-  buttonInitialize: function(node) {
-    var i, _i, _len, _results;
-    _results = [];
-    for (_i = 0, _len = node.length; _i < _len; _i++) {
-      i = node[_i];
-      this.components[i].setValue('');
-      _results.push(this.components[i].isValid());
-    }
-    return _results;
-  },
   onShow: function() {
-    $(this.closeButtonNode).hide();
     this.inherited(arguments);
     dojo.publish('app/App/layerAllShow');
     return dojo.publish('app/App/layerFadeIn');
   },
   onHide: function() {
     this.inherited(arguments);
-    if (this.data != null) {
-      dojo.publish('app/App/layerAllHide');
-      return dojo.publish('app/App/layerFadeOut');
-    }
+    dojo.publish('app/App/layerAllHide');
+    return dojo.publish('app/App/layerFadeOut');
   },
   getData: function() {
-    return this.data;
+    if (this.data != null) {
+      return this.data;
+    } else {
+      return false;
+    }
   }
 });

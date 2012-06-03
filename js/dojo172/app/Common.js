@@ -21,12 +21,28 @@ dojo.declare('app.Common', [], {
     this._registerTempSubscribe(func);
     return dojo.publish('app/Hash/getHash', ['/temp/' + this.app + '/' + this._countSubscribe]);
   },
-  _getTableData: function(table, func) {
+  _login: function(func) {
     this._registerTempSubscribe(func);
-    return dojo.publish('app/DataManager/getData', [table, '/temp/' + this.app + '/' + this._countSubscribe]);
+    return dojo.publish('app/DataManager/login', ['/temp/' + this.app + '/' + this._countSubscribe]);
   },
-  _getUserData: function(func) {
+  _getUser: function(func) {
     this._registerTempSubscribe(func);
-    return dojo.publish('app/DataManager/getUserData', ['/temp/' + this.app + '/' + this._countSubscribe]);
+    return dojo.publish('app/DataManager/getUser', ['/temp/' + this.app + '/' + this._countSubscribe]);
+  },
+  _getTable: function(table, id, func) {
+    this._registerTempSubscribe(func);
+    return dojo.publish('app/DataManager/getTable', [table, id, '/temp/' + this.app + '/' + this._countSubscribe]);
+  },
+  _getTopicList: function(options, func) {
+    this._registerTempSubscribe(func);
+    return dojo.publish('app/DataManager/getTopicList', [options, '/temp/' + this.app + '/' + this._countSubscribe]);
+  },
+  _getCategoryList: function(func) {
+    this._registerTempSubscribe(func);
+    return dojo.publish('app/DataManager/getCategoryList', ['/temp/' + this.app + '/' + this._countSubscribe]);
+  },
+  _getPost: function(options, func) {
+    this._registerTempSubscribe(func);
+    return dojo.publish('app/DataManager/getPost', [options, '/temp/' + this.app + '/' + this._countSubscribe]);
   }
 });

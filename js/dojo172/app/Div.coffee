@@ -11,32 +11,34 @@ dojo.declare(
 
 	widgetsInTemplate: true
 	templateString: dojo.cache('app', 'templates/Div.html')
+	body: ''
 	style: 'display:none;'
 	constructor: ->
 		@inherited arguments
 
 	postCreate: ->
 		@inherited arguments
-		# 申請書メニューの作成
-		if @sheetMenuEnable
-			$(@btBookmark).bind('click', =>
-				console.log 'add to bookmark folder'
-			)
-			$(@btToggle).bind('click', =>
+		# toggle button
+		if @toggle
+			$(@btToggle).bind 'click', =>
 				if($(@divBody).css('display') == 'none')
 					$(@divBody).slideDown(250)
 					$(@btToggle).text '[hide]'
 				else
 					$(@divBody).slideUp(250)
 					$(@btToggle).text '[show]'
-			)
-			$(@btClose).bind('click', =>
-				$(@top).slideUp(300, =>
-					@destroyRendering()
-				)
-			)
 		else
-			$(@sheetMenu).empty()
+			$(@btToggle).remove()
+		# close button
+		if @close
+			$(@btClose).bind 'click', =>
+				$(@top).slideUp 300, =>
+					@destroyRendering()
+		else
+			$(@btClose).remove()
+		# body
+		if @body == ''
+			$(@divBody).remove()
 
 	startup: ->
 		@inherited arguments

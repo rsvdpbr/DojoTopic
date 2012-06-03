@@ -28,11 +28,26 @@ dojo.declare(
 		dojo.publish('app/Hash/getHash', ['/temp/'+@app+'/'+@_countSubscribe])
 
 	# DataManagerクラスとの連携を行う
-	_getTableData: (table,func)->
+	_login: (func)->
 		@_registerTempSubscribe(func)
-		dojo.publish('app/DataManager/getData', [table, '/temp/'+@app+'/'+@_countSubscribe])
-	_getUserData: (func)->
+		dojo.publish('app/DataManager/login', ['/temp/'+@app+'/'+@_countSubscribe])
+	_getUser: (func)->
 		@_registerTempSubscribe(func)
-		dojo.publish('app/DataManager/getUserData', ['/temp/'+@app+'/'+@_countSubscribe])
+		dojo.publish('app/DataManager/getUser', ['/temp/'+@app+'/'+@_countSubscribe])
+	_getTable: (table, id, func)->
+		@_registerTempSubscribe(func)
+		dojo.publish('app/DataManager/getTable', [table, id, '/temp/'+@app+'/'+@_countSubscribe])
+	_getTopicList: (options, func)->
+		@_registerTempSubscribe(func)
+		dojo.publish('app/DataManager/getTopicList', [options, '/temp/'+@app+'/'+@_countSubscribe])
+	_getCategoryList: (func)->
+		@_registerTempSubscribe(func)
+		dojo.publish('app/DataManager/getCategoryList', ['/temp/'+@app+'/'+@_countSubscribe])
+	_getPost: (options, func)->
+		@_registerTempSubscribe(func)
+		dojo.publish('app/DataManager/getPost', [options, '/temp/'+@app+'/'+@_countSubscribe])
 
 )
+# 循環参照
+# デザインパターン
+# PHPで学ぶデザインパターン（ウェブ上にある）
