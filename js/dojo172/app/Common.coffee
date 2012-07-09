@@ -46,7 +46,9 @@ dojo.declare(
 	_getPost: (options, func)->
 		@_registerTempSubscribe(func)
 		dojo.publish('app/DataManager/getPost', [options, '/temp/'+@app+'/'+@_countSubscribe])
-
+	_setPostCheck: (options, func)->
+		@_registerTempSubscribe(func)
+		dojo.publish('app/DataManager/setPostCheck', [options, '/temp/'+@app+'/'+@_countSubscribe])
 )
 # 循環参照
 # デザインパターン

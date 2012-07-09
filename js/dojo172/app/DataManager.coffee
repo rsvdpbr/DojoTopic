@@ -1,9 +1,6 @@
 
 dojo.provide 'app.DataManager'
 
-dojo.require 'app.LoginDialog'
-dojo.require 'app.RegisterDialog'
-
 dojo.require 'dojox.encoding.digests.MD5'
 
 dojo.declare(
@@ -30,9 +27,8 @@ dojo.declare(
 		handles.push dojo.subscribe('app/DataManager/getTable', @, @getTable)
 		handles.push dojo.subscribe('app/DataManager/getTopicList', @, @getTopicList)
 		handles.push dojo.subscribe('app/DataManager/getPost', @, @getPost)
+		handles.push dojo.subscribe('app/DataManager/setPostCheck', @, @setPostCheck)
 		handles.push dojo.subscribe('app/DataManager/onHashChange', @, @onHashChange)
-		handles.push dojo.subscribe('app/DataManager/login', @, @login)
-		handles.push dojo.subscribe('app/DataManager/getUser', @, @getUser)
 		h = dojo.connect(@, 'uninitialize', @, ->
 			dojo.disconnect(h)
 			for handle in handles
@@ -74,40 +70,6 @@ dojo.declare(
 	onHashChange: (hash)->
 		if hash.register?
 			@register()
-
-	# ログイン中のユーザ情報を取得する
-	getUser: (publish)->
-		if @user?
-			return dojo.publish(publish, [dojo.clone(@user)])
-		else
-			return dojo.publish(publish, [null])
-	# ログインする（簡易。ぶっちゃけログインしなくてもデータは見れる）
-	login: (publish)->
-		if @user?
-			return dojo.publish(publish, [dojo.clone(@user)])
-		@_getHashData (data)->
-			# ログイン不要の場合
-			if data.nologin?
-				return dojo.publish(publish, [true])
-			# ダイアログ処理
-			if !@loginDlg?
-				@loginDlg = new app.LoginDialog()
-				dojo.connect(@loginDlg, 'onExecute', @, ->
-					@user = @loginDlg.getData()
-					dojo.publish('app/Menubar/setUser', [dojo.clone(@user)])
-					dojo.publish('app/Hash/changeHash', [user:@user.username])
-					dojo.publish(publish, [@user])
-				)
-				dojo.connect(@loginDlg, 'onCancel', @, ->
-					dojo.publish('app/Hash/changeHash', [mode:'topic'])
-					dojo.publish(publish, [null])
-				)
-			@loginDlg.show()
-	# ユーザ登録をする
-	register: ->
-		if !@registerDlg?
-			@registerDlg = new app.RegisterDialog()
-		@registerDlg.show()
 
 	# Topic関連
 	getCategoryList: (publish)->
@@ -176,6 +138,23 @@ dojo.declare(
 				dojo.publish('app/App/layerFadeOut')
 			error: (error)->
 				console.log 'app.DataManager->getPost [error] ',error
+				dojo.publish('app/App/layerFadeOut')
+	setPostCheck: (options, publish)->
+		dojo.publish('app/App/layerFadeIn')
+		that = @
+		dojo.xhrPost
+			url: 'php/access.php'
+			handleAs: 'json'
+			content:
+				class: 'topic'
+				method: 'setPostCheck'
+				value: dojo.toJson(options)
+			load: (data)->
+				console.log 'SENDED POST DATA:', data
+				dojo.publish(publish, [data])
+				dojo.publish('app/App/layerFadeOut')
+			error: (error)->
+				console.log 'app.DataManager->setPostCheck [error] ',error
 				dojo.publish('app/App/layerFadeOut')
 
 

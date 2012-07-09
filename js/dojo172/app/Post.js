@@ -6,25 +6,45 @@ dojo.require('dijit._Widget');
 
 dojo.require('dijit._Templated');
 
-dojo.declare('app.Post', [dijit._Widget, dijit._Templated], {
+dojo.declare('app.Post', [dijit._Widget, dijit._Templated, app.Common], {
+  app: 'app.Post',
   widgetsInTemplate: true,
   templateString: dojo.cache('app', 'templates/Post.html'),
   body: '',
   style: 'display:none;',
   constructor: function(data) {
     this.inherited(arguments);
+    console.log('post,', data);
     this.data = data;
-    delete this.data.id;
     return this.data.created = this.data.created.split('-').join('/');
   },
   postCreate: function() {
     this.inherited(arguments);
     $(this.appDatetime).text(this.data.created);
     if (this.data.display_name != null) {
-      return $(this.appUserName).text(this.data.display_name + ' (' + this.data.username + ')');
+      $(this.appUserName).text(this.data.display_name + ' (' + this.data.username + ')');
     } else {
-      return $(this.appUserName).text('anonymous user');
+      $(this.appUserName).text('anonymous user');
     }
+    if (this.data.check_flag === '1') {
+      $(this.top).addClass('appPostChecked');
+    }
+    return dojo.connect(this.top, 'click', this, function() {
+      var flag;
+      console.log('clicked', flag);
+      if ($(this.top).hasClass('appPostChecked')) {
+        flag = 0;
+      } else {
+        flag = 1;
+      }
+      return this._setPostCheck({
+        id: this.data.id,
+        flag: flag
+      }, function(data) {
+        console.log('callback', data);
+        return $(this.top).toggleClass('appPostChecked');
+      });
+    });
   },
   startup: function() {
     this.inherited(arguments);

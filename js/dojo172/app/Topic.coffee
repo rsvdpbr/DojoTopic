@@ -73,16 +73,6 @@ dojo.declare(
 			body: ''
 			toggle: true
 		).placeAt(@mainTop).startup()
-		# new app.Div(
-		# 	topic: 'トピック掲示板'
-		# 	body: 'まぁ好きに語ればいいと思うよ'
-		# 	toggle: true
-		# ).placeAt(@mainTop).startup()
-		# new app.Div(
-		# 	topic: '今週の名言'
-		# 	body: '募集中'
-		# 	toggle: true
-		# ).placeAt(@mainTop).startup()
 
 	createAcMenu: ->
 		dojo.publish('app/Topic/updateMenubar')

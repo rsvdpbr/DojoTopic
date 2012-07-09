@@ -14,10 +14,6 @@ dojo.require('app.Div');
 
 dojo.require('app.Topic');
 
-dojo.require('app.Register');
-
-dojo.require('app.Login');
-
 dojo.require('dijit.layout.BorderContainer');
 
 dojo.require('dijit.layout.StackContainer');
@@ -112,10 +108,6 @@ dojo.declare('app.App', [app.Common], {
       };
       if (hash.mode === 'topic') {
         this.components.innerContents[hash.mode] = new app.Topic(obj);
-      } else if (hash.mode === 'register') {
-        this.components.innerContents[hash.mode] = new app.Register(obj);
-      } else if (hash.mode === 'login') {
-        this.components.innerContents[hash.mode] = new app.Login(obj);
       }
       this.components.contents.addChild(this.components.innerContents[hash.mode]);
     }

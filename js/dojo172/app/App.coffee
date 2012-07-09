@@ -8,8 +8,6 @@ dojo.require 'app.Menubar'
 dojo.require 'app.Div'
 
 dojo.require 'app.Topic'
-dojo.require 'app.Register'
-dojo.require 'app.Login'
 
 dojo.require 'dijit.layout.BorderContainer'
 dojo.require 'dijit.layout.StackContainer'
@@ -107,10 +105,6 @@ dojo.declare(
 				gBackground: 'background:#fdfdfe;'
 			if hash.mode == 'topic'
 				@components.innerContents[hash.mode] = new app.Topic(obj)
-			else if hash.mode == 'register'
-				@components.innerContents[hash.mode] = new app.Register(obj)
-			else if hash.mode == 'login'
-				@components.innerContents[hash.mode] = new app.Login(obj)
 			@components.contents.addChild(@components.innerContents[hash.mode])
 		# 表示
 		@components.contents.selectChild(@components.innerContents[hash.mode])

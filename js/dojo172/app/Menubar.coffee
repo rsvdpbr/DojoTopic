@@ -18,14 +18,15 @@ dojo.declare(
 	buttons: {}										# ボタン要素リスト
 	contents:											# コンテンツ一覧。これを基にボタンを生成する
 		topic:
-			label: 'トピック'
-			icon: 'dijitIcon dijitIconFolderOpen'
-		# register:
-		# 	label: '各種申し込み'
-		# 	icon: 'dijitIcon dijitLeaf'
-		login:
-			label: 'ログイン'
+			label: 'トピック掲示板'
 			icon: 'dijitIcon dijitIconUndo'
+			# icon: 'dijitIcon dijitIconFolderOpen'
+		# # login:
+		# # 	label: 'ログイン'
+		# # 	icon: 'dijitIcon dijitIconUndo'
+		# manual:
+		# 	label: 'ヘルプ'
+		# 	icon: 'dijitIcon dijitLeaf'
 	userData: null
 	constructor: ->
 		@inherited arguments
@@ -53,7 +54,6 @@ dojo.declare(
 	setSubscribe: ->
 		handles = []
 		handles.push dojo.subscribe('app/Menubar/onHashChange', @, @onHashChange)
-		handles.push dojo.subscribe('app/Menubar/setUser', @, @setUser)
 		h = dojo.connect(@, 'uninitialize', @, ->
 			dojo.disconnect(h)
 			for handle in handles
@@ -66,11 +66,5 @@ dojo.declare(
 			button.setColorType('normal')
 		@buttons[hash.mode].setColorType('selected')
 
-	# ログイン中のユーザをセットする
-	setUser: (user)->
-		console.log user
-		@userData = user
-		$(@userSpace).text('login-user : '+user.username)
-		@buttons.login.setLabel('ログインメニュー')
 
 )

@@ -44,5 +44,9 @@ dojo.declare('app.Common', [], {
   _getPost: function(options, func) {
     this._registerTempSubscribe(func);
     return dojo.publish('app/DataManager/getPost', [options, '/temp/' + this.app + '/' + this._countSubscribe]);
+  },
+  _setPostCheck: function(options, func) {
+    this._registerTempSubscribe(func);
+    return dojo.publish('app/DataManager/setPostCheck', [options, '/temp/' + this.app + '/' + this._countSubscribe]);
   }
 });

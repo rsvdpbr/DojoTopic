@@ -2,10 +2,6 @@
 
 dojo.provide('app.DataManager');
 
-dojo.require('app.LoginDialog');
-
-dojo.require('app.RegisterDialog');
-
 dojo.require('dojox.encoding.digests.MD5');
 
 dojo.declare('app.DataManager', [app.Common], {
@@ -30,9 +26,8 @@ dojo.declare('app.DataManager', [app.Common], {
     handles.push(dojo.subscribe('app/DataManager/getTable', this, this.getTable));
     handles.push(dojo.subscribe('app/DataManager/getTopicList', this, this.getTopicList));
     handles.push(dojo.subscribe('app/DataManager/getPost', this, this.getPost));
+    handles.push(dojo.subscribe('app/DataManager/setPostCheck', this, this.setPostCheck));
     handles.push(dojo.subscribe('app/DataManager/onHashChange', this, this.onHashChange));
-    handles.push(dojo.subscribe('app/DataManager/login', this, this.login));
-    handles.push(dojo.subscribe('app/DataManager/getUser', this, this.getUser));
     return h = dojo.connect(this, 'uninitialize', this, function() {
       var handle, _i, _len, _results;
       dojo.disconnect(h);
@@ -89,51 +84,6 @@ dojo.declare('app.DataManager', [app.Common], {
     if (hash.register != null) {
       return this.register();
     }
-  },
-  getUser: function(publish) {
-    if (this.user != null) {
-      return dojo.publish(publish, [dojo.clone(this.user)]);
-    } else {
-      return dojo.publish(publish, [null]);
-    }
-  },
-  login: function(publish) {
-    if (this.user != null) {
-      return dojo.publish(publish, [dojo.clone(this.user)]);
-    }
-    return this._getHashData(function(data) {
-      if (data.nologin != null) {
-        return dojo.publish(publish, [true]);
-      }
-      if (!(this.loginDlg != null)) {
-        this.loginDlg = new app.LoginDialog();
-        dojo.connect(this.loginDlg, 'onExecute', this, function() {
-          this.user = this.loginDlg.getData();
-          dojo.publish('app/Menubar/setUser', [dojo.clone(this.user)]);
-          dojo.publish('app/Hash/changeHash', [
-            {
-              user: this.user.username
-            }
-          ]);
-          return dojo.publish(publish, [this.user]);
-        });
-        dojo.connect(this.loginDlg, 'onCancel', this, function() {
-          dojo.publish('app/Hash/changeHash', [
-            {
-              mode: 'topic'
-            }
-          ]);
-          return dojo.publish(publish, [null]);
-        });
-      }
-      return this.loginDlg.show();
-    });
-  },
-  register: function() {
-    if (!(this.registerDlg != null)) {
-      this.registerDlg = new app.RegisterDialog();
-    }
-    return this.registerDlg.show();
   },
   getCategoryList: function(publish) {
     var that;
@@ -212,6 +162,29 @@ dojo.declare('app.DataManager', [app.Common], {
       },
       error: function(error) {
         console.log('app.DataManager->getPost [error] ', error);
+        return dojo.publish('app/App/layerFadeOut');
+      }
+    });
+  },
+  setPostCheck: function(options, publish) {
+    var that;
+    dojo.publish('app/App/layerFadeIn');
+    that = this;
+    return dojo.xhrPost({
+      url: 'php/access.php',
+      handleAs: 'json',
+      content: {
+        "class": 'topic',
+        method: 'setPostCheck',
+        value: dojo.toJson(options)
+      },
+      load: function(data) {
+        console.log('SENDED POST DATA:', data);
+        dojo.publish(publish, [data]);
+        return dojo.publish('app/App/layerFadeOut');
+      },
+      error: function(error) {
+        console.log('app.DataManager->setPostCheck [error] ', error);
         return dojo.publish('app/App/layerFadeOut');
       }
     });

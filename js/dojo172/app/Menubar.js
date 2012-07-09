@@ -17,11 +17,7 @@ dojo.declare('app.Menubar', [dijit._Widget, dijit._Templated, app.Common], {
   buttons: {},
   contents: {
     topic: {
-      label: 'トピック',
-      icon: 'dijitIcon dijitIconFolderOpen'
-    },
-    login: {
-      label: 'ログイン',
+      label: 'トピック掲示板',
       icon: 'dijitIcon dijitIconUndo'
     }
   },
@@ -67,7 +63,6 @@ dojo.declare('app.Menubar', [dijit._Widget, dijit._Templated, app.Common], {
     var h, handles;
     handles = [];
     handles.push(dojo.subscribe('app/Menubar/onHashChange', this, this.onHashChange));
-    handles.push(dojo.subscribe('app/Menubar/setUser', this, this.setUser));
     return h = dojo.connect(this, 'uninitialize', this, function() {
       var handle, _i, _len, _results;
       dojo.disconnect(h);
@@ -87,11 +82,5 @@ dojo.declare('app.Menubar', [dijit._Widget, dijit._Templated, app.Common], {
       button.setColorType('normal');
     }
     return this.buttons[hash.mode].setColorType('selected');
-  },
-  setUser: function(user) {
-    console.log(user);
-    this.userData = user;
-    $(this.userSpace).text('login-user : ' + user.username);
-    return this.buttons.login.setLabel('ログインメニュー');
   }
 });

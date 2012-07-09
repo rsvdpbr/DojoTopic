@@ -31,8 +31,7 @@ dojo.declare('app.TopicUnit', [dijit._Widget, dijit._Templated, app.Common], {
     return this.posts = dojo.clone(posts);
   },
   postCreate: function() {
-    var count, id, post, _ref,
-      _this = this;
+    var count, id, post, _ref;
     this.inherited(arguments);
     new app.Div({
       topic: this.topic.title,
@@ -49,62 +48,46 @@ dojo.declare('app.TopicUnit', [dijit._Widget, dijit._Templated, app.Common], {
       height: '',
       extraPlugins: [dijit._editor.plugins.AlwaysShowToolbar]
     }, this.divEditor);
-    $(this.spanLabel).bind('click', function() {
-      if (_this.divAnonymous.getValue() === 'on') {
-        return _this.divAnonymous.setChecked(false);
-      } else {
-        return _this.divAnonymous.setChecked(true);
-      }
-    });
-    this._getUser(function(user) {
-      if (!(user != null)) {
-        return $(this.boxAnonymous).empty();
-      }
-    });
     return dojo.connect(this.divSubmit, 'onClick', this, function() {
-      return this._getUser(function(user) {
-        var data, that;
-        console.log('user', user);
-        data = {
-          topic_id: this.topic.id,
-          user_id: user != null ? user.id : '0',
-          body: this.editor.getValue(),
-          anonymous_flag: this.divAnonymous.getValue() === 'on' ? '1' : '0'
-        };
-        console.log(data);
-        if (data.body !== '') {
-          dojo.publish('app/App/layerFadeIn');
-          that = this;
-          return dojo.xhrPost({
-            url: 'php/access.php',
-            handleAs: 'json',
-            content: {
-              "class": 'topic',
-              method: 'savePost',
-              value: dojo.toJson(data)
-            },
-            load: function(data) {
-              var hashkey;
-              console.log(data);
-              dojo.publish('app/DataManager/clearCache', ['topic']);
-              hashkey = dojox.encoding.digests.MD5(dojo.toJson({
-                topic_id: that.topic.id
-              }));
-              dojo.publish('app/DataManager/clearCache', ['getPost', hashkey]);
-              dojo.publish('app/Topic/clearNowPage');
-              return that._getTopicList({}, function() {
-                dojo.publish('app/Topic/updateMenuTree');
-                dojo.publish('app/Topic/updateTopic', [that.topic.id]);
-                return dojo.publish('app/App/layerFadeOut');
-              });
-            },
-            error: function(error) {
-              console.log('app.LoginDialog->authentication [error] ', error);
+      var data, that;
+      data = {
+        topic_id: this.topic.id,
+        writer: 'anonymous-user',
+        body: this.editor.getValue()
+      };
+      console.log(data);
+      if (data.body !== '') {
+        dojo.publish('app/App/layerFadeIn');
+        that = this;
+        return dojo.xhrPost({
+          url: 'php/access.php',
+          handleAs: 'json',
+          content: {
+            "class": 'topic',
+            method: 'savePost',
+            value: dojo.toJson(data)
+          },
+          load: function(data) {
+            var hashkey;
+            console.log(data);
+            dojo.publish('app/DataManager/clearCache', ['topic']);
+            hashkey = dojox.encoding.digests.MD5(dojo.toJson({
+              topic_id: that.topic.id
+            }));
+            dojo.publish('app/DataManager/clearCache', ['getPost', hashkey]);
+            dojo.publish('app/Topic/clearNowPage');
+            return that._getTopicList({}, function() {
+              dojo.publish('app/Topic/updateMenuTree');
+              dojo.publish('app/Topic/updateTopic', [that.topic.id]);
               return dojo.publish('app/App/layerFadeOut');
-            }
-          });
-        }
-      });
+            });
+          },
+          error: function(error) {
+            console.log('app.TopicUnit->authentication [error] ', error);
+            return dojo.publish('app/App/layerFadeOut');
+          }
+        });
+      }
     });
   }
 });
