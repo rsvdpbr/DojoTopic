@@ -22,7 +22,7 @@ class Topic {
 		$default = array(
 			'conditions' => '1',
 			'order' => 'last_update DESC',
-			'limit' => '20',
+			'limit' => '200',
 			'page' => '0',
 		);
 		if(!is_array($options)){
@@ -47,7 +47,7 @@ class Topic {
 		$default = array(
 			'conditions' => array('1'),
 			'order' => 'created DESC',
-			'limit' => '20',
+			'limit' => '200',
 			'page' => '0',
 		);
 		$options = (array)$this->JSON->decode($options);
