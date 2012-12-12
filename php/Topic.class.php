@@ -74,6 +74,12 @@ class Topic {
 		$result = $this->DBClass->executeQuery($query);
 		return $result;
 	}
+	function getCheckedPost(){
+		$query = "SELECT * FROM `posts` WHERE delete_flag = 0 AND check_flag = 1 ";
+		$query .= "ORDER BY created DESC";
+		$result = $this->DBClass->executeQuery($query);
+		return $result;
+	}
 	/* ここのcoffeescript側の処理から */
 	function getPostCount($id){
 		if(!ctype_number($id)){

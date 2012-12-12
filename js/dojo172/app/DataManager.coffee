@@ -27,6 +27,7 @@ dojo.declare(
 		handles.push dojo.subscribe('app/DataManager/getTable', @, @getTable)
 		handles.push dojo.subscribe('app/DataManager/getTopicList', @, @getTopicList)
 		handles.push dojo.subscribe('app/DataManager/getPost', @, @getPost)
+		handles.push dojo.subscribe('app/DataManager/getCheckedPost', @, @getCheckedPost)
 		handles.push dojo.subscribe('app/DataManager/setPostCheck', @, @setPostCheck)
 		handles.push dojo.subscribe('app/DataManager/onHashChange', @, @onHashChange)
 		h = dojo.connect(@, 'uninitialize', @, ->
@@ -139,6 +140,24 @@ dojo.declare(
 			error: (error)->
 				console.log 'app.DataManager->getPost [error] ',error
 				dojo.publish('app/App/layerFadeOut')
+	# ネットからチェック済み投稿を取得
+	getCheckedPost: (options, publish)->
+		dojo.publish('app/App/layerFadeIn')
+		that = @
+		dojo.xhrPost
+			url: 'php/access.php'
+			handleAs: 'json'
+			content:
+				class: 'topic'
+				method: 'getCheckedPost'
+			load: (data)->
+				console.log 'SENDED POST DATA:', data
+				dojo.publish(publish, [data])
+				dojo.publish('app/App/layerFadeOut')
+			error: (error)->
+				console.log 'app.DataManager->getCheckedPost [error] ',error
+				dojo.publish('app/App/layerFadeOut')
+	# 投稿にチェックを付ける
 	setPostCheck: (options, publish)->
 		dojo.publish('app/App/layerFadeIn')
 		that = @

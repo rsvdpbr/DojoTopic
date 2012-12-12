@@ -42,52 +42,57 @@ dojo.declare('app.TopicUnit', [dijit._Widget, dijit._Templated, app.Common], {
     for (id in _ref) {
       post = _ref[id];
       post.count = count--;
-      new app.Post(post).placeAt(this.divPosts).startup();
+      new app.Post(dojo.clone(post)).placeAt(this.divPosts).startup();
     }
-    this.editor = new dijit.Editor({
-      height: '',
-      extraPlugins: [dijit._editor.plugins.AlwaysShowToolbar]
-    }, this.divEditor);
-    return dojo.connect(this.divSubmit, 'onClick', this, function() {
-      var data, that;
-      data = {
-        topic_id: this.topic.id,
-        writer: 'anonymous-user',
-        body: this.editor.getValue()
-      };
-      console.log(data);
-      if (data.body !== '') {
-        dojo.publish('app/App/layerFadeIn');
-        that = this;
-        return dojo.xhrPost({
-          url: 'php/access.php',
-          handleAs: 'json',
-          content: {
-            "class": 'topic',
-            method: 'savePost',
-            value: dojo.toJson(data)
-          },
-          load: function(data) {
-            var hashkey;
-            console.log(data);
-            dojo.publish('app/DataManager/clearCache', ['topic']);
-            hashkey = dojox.encoding.digests.MD5(dojo.toJson({
-              topic_id: that.topic.id
-            }));
-            dojo.publish('app/DataManager/clearCache', ['getPost', hashkey]);
-            dojo.publish('app/Topic/clearNowPage');
-            return that._getTopicList({}, function() {
-              dojo.publish('app/Topic/updateMenuTree');
-              dojo.publish('app/Topic/updateTopic', [that.topic.id]);
+    if ((this.topic.type != null) && this.topic.type === 'check') {
+      console.log('no editor in checked posts');
+      return this.divSubmit.destroy();
+    } else {
+      this.editor = new dijit.Editor({
+        height: '',
+        extraPlugins: [dijit._editor.plugins.AlwaysShowToolbar]
+      }, this.divEditor);
+      return dojo.connect(this.divSubmit, 'onClick', this, function() {
+        var data, that;
+        data = {
+          topic_id: this.topic.id,
+          writer: 'anonymous-user',
+          body: this.editor.getValue()
+        };
+        console.log(data);
+        if (data.body !== '') {
+          dojo.publish('app/App/layerFadeIn');
+          that = this;
+          return dojo.xhrPost({
+            url: 'php/access.php',
+            handleAs: 'json',
+            content: {
+              "class": 'topic',
+              method: 'savePost',
+              value: dojo.toJson(data)
+            },
+            load: function(data) {
+              var hashkey;
+              console.log(data);
+              dojo.publish('app/DataManager/clearCache', ['topic']);
+              hashkey = dojox.encoding.digests.MD5(dojo.toJson({
+                topic_id: that.topic.id
+              }));
+              dojo.publish('app/DataManager/clearCache', ['getPost', hashkey]);
+              dojo.publish('app/Topic/clearNowPage');
+              return that._getTopicList({}, function() {
+                dojo.publish('app/Topic/updateMenuTree');
+                dojo.publish('app/Topic/updateTopic', [that.topic.id]);
+                return dojo.publish('app/App/layerFadeOut');
+              });
+            },
+            error: function(error) {
+              console.log('app.TopicUnit->authentication [error] ', error);
               return dojo.publish('app/App/layerFadeOut');
-            });
-          },
-          error: function(error) {
-            console.log('app.TopicUnit->authentication [error] ', error);
-            return dojo.publish('app/App/layerFadeOut');
-          }
-        });
-      }
-    });
+            }
+          });
+        }
+      });
+    }
   }
 });

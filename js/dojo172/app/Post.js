@@ -16,7 +16,14 @@ dojo.declare('app.Post', [dijit._Widget, dijit._Templated, app.Common], {
     this.inherited(arguments);
     console.log('post,', data);
     this.data = data;
-    return this.data.created = this.data.created.split('-').join('/');
+    this.data.created = this.data.created.split('-').join('/');
+    this.data.id_back = this.data.id;
+    delete this.data.id;
+    return this.data.body = this.setRelation(this.data.body);
+  },
+  setRelation: function(string) {
+    console.log(string);
+    return string;
   },
   postCreate: function() {
     this.inherited(arguments);
@@ -30,7 +37,8 @@ dojo.declare('app.Post', [dijit._Widget, dijit._Templated, app.Common], {
       $(this.top).addClass('appPostChecked');
     }
     return dojo.connect(this.top, 'click', this, function() {
-      var flag;
+      var flag,
+        _this = this;
       console.log('clicked', flag);
       if ($(this.top).hasClass('appPostChecked')) {
         flag = 0;
@@ -38,11 +46,17 @@ dojo.declare('app.Post', [dijit._Widget, dijit._Templated, app.Common], {
         flag = 1;
       }
       return this._setPostCheck({
-        id: this.data.id,
+        id: this.data.id_back,
         flag: flag
       }, function(data) {
+        var hashkey;
         console.log('callback', data);
-        return $(this.top).toggleClass('appPostChecked');
+        $(_this.top).toggleClass('appPostChecked');
+        dojo.publish('app/DataManager/clearCache', ['topic']);
+        hashkey = dojox.encoding.digests.MD5(dojo.toJson({
+          topic_id: _this.data.topic_id
+        }));
+        return dojo.publish('app/DataManager/clearCache', ['getPost', hashkey]);
       });
     });
   },

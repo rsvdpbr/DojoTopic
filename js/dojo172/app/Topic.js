@@ -59,6 +59,7 @@ dojo.declare('app.Topic', [dijit._Widget, dijit._Templated, app.Common], {
       return this.nowPage = 0;
     }));
     handles.push(dojo.subscribe('app/Topic/updateTopic', this, this.setTopic));
+    handles.push(dojo.subscribe('app/Topic/getCheckedPost', this, this.getCheckedPost));
     handles.push(dojo.subscribe('app/Topic/moveTop', this, this.moveTop));
     handles.push(dojo.subscribe('app/Topic/onHashChange', this, this.onHashChange));
     return h = dojo.connect(this, 'uninitialize', this, function() {
@@ -79,6 +80,8 @@ dojo.declare('app.Topic', [dijit._Widget, dijit._Templated, app.Common], {
     this.nowTopicId = hash.tid;
     if ((this.nowTopicId != null) && this.nowTopicId > 0) {
       return dojo.publish('app/Topic/updateTopic', [this.nowTopicId]);
+    } else if (this.nowTopicId === 'check') {
+      return dojo.publish('app/Topic/getCheckedPost');
     } else {
       return dojo.publish('app/Topic/moveTop');
     }
@@ -192,6 +195,12 @@ dojo.declare('app.Topic', [dijit._Widget, dijit._Templated, app.Common], {
         label: 'label',
         items: []
       };
+      list.items.push({
+        id: 'topic-0',
+        label: 'Checked Posts',
+        tid: 'check',
+        type: 'top'
+      });
       prefix = this.lastCid != null ? cid + ': ' : '';
       for (_i = 0, _len = sortedData.length; _i < _len; _i++) {
         topic = sortedData[_i];
@@ -287,6 +296,34 @@ dojo.declare('app.Topic', [dijit._Widget, dijit._Templated, app.Common], {
               }
             ]);
           }
+        });
+      }
+    });
+  },
+  getCheckedPost: function() {
+    return this._getCheckedPost({}, function(posts) {
+      var func,
+        _this = this;
+      console.log(posts);
+      func = function() {
+        $(_this.mainTemp).empty();
+        new app.TopicUnit({
+          topic: {
+            title: 'Checked Post',
+            description: '',
+            type: 'check'
+          },
+          posts: posts
+        }).placeAt(_this.mainTemp).startup();
+        return $(_this.mainTemp).fadeIn(100);
+      };
+      if ($(this.mainTop).css('display') === 'block') {
+        return $(this.mainTop).fadeOut(100, function() {
+          return func();
+        });
+      } else if ($(this.mainTemp).css('display') === 'block') {
+        return $(this.mainTemp).fadeOut(100, function() {
+          return func();
         });
       }
     });

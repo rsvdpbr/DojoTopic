@@ -26,6 +26,7 @@ dojo.declare('app.DataManager', [app.Common], {
     handles.push(dojo.subscribe('app/DataManager/getTable', this, this.getTable));
     handles.push(dojo.subscribe('app/DataManager/getTopicList', this, this.getTopicList));
     handles.push(dojo.subscribe('app/DataManager/getPost', this, this.getPost));
+    handles.push(dojo.subscribe('app/DataManager/getCheckedPost', this, this.getCheckedPost));
     handles.push(dojo.subscribe('app/DataManager/setPostCheck', this, this.setPostCheck));
     handles.push(dojo.subscribe('app/DataManager/onHashChange', this, this.onHashChange));
     return h = dojo.connect(this, 'uninitialize', this, function() {
@@ -162,6 +163,28 @@ dojo.declare('app.DataManager', [app.Common], {
       },
       error: function(error) {
         console.log('app.DataManager->getPost [error] ', error);
+        return dojo.publish('app/App/layerFadeOut');
+      }
+    });
+  },
+  getCheckedPost: function(options, publish) {
+    var that;
+    dojo.publish('app/App/layerFadeIn');
+    that = this;
+    return dojo.xhrPost({
+      url: 'php/access.php',
+      handleAs: 'json',
+      content: {
+        "class": 'topic',
+        method: 'getCheckedPost'
+      },
+      load: function(data) {
+        console.log('SENDED POST DATA:', data);
+        dojo.publish(publish, [data]);
+        return dojo.publish('app/App/layerFadeOut');
+      },
+      error: function(error) {
+        console.log('app.DataManager->getCheckedPost [error] ', error);
         return dojo.publish('app/App/layerFadeOut');
       }
     });

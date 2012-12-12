@@ -45,6 +45,10 @@ dojo.declare('app.Common', [], {
     this._registerTempSubscribe(func);
     return dojo.publish('app/DataManager/getPost', [options, '/temp/' + this.app + '/' + this._countSubscribe]);
   },
+  _getCheckedPost: function(options, func) {
+    this._registerTempSubscribe(func);
+    return dojo.publish('app/DataManager/getCheckedPost', [options, '/temp/' + this.app + '/' + this._countSubscribe]);
+  },
   _setPostCheck: function(options, func) {
     this._registerTempSubscribe(func);
     return dojo.publish('app/DataManager/setPostCheck', [options, '/temp/' + this.app + '/' + this._countSubscribe]);

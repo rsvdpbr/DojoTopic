@@ -49,6 +49,7 @@ dojo.declare(
 		handles.push dojo.subscribe('app/Topic/updateMenuTree', @, @setAcMenuTree)
 		handles.push dojo.subscribe('app/Topic/clearNowPage', @, -> @nowPage = 0)
 		handles.push dojo.subscribe('app/Topic/updateTopic', @, @setTopic)
+		handles.push dojo.subscribe('app/Topic/getCheckedPost', @, @getCheckedPost)
 		handles.push dojo.subscribe('app/Topic/moveTop', @, @moveTop)
 		handles.push dojo.subscribe('app/Topic/onHashChange', @, @onHashChange)
 		h = dojo.connect(@, 'uninitialize', @, ->
@@ -63,6 +64,8 @@ dojo.declare(
 		@nowTopicId = hash.tid
 		if @nowTopicId? and @nowTopicId > 0
 			dojo.publish('app/Topic/updateTopic', [@nowTopicId])
+		else if @nowTopicId == 'check'
+			dojo.publish('app/Topic/getCheckedPost')
 		else
 			dojo.publish('app/Topic/moveTop')
 
@@ -156,6 +159,11 @@ dojo.declare(
 				identifier: 'id'
 				label: 'label'
 				items: []
+			list.items.push
+				id: 'topic-0'
+				label: 'Checked Posts'
+				tid: 'check'
+				type: 'top'
 			prefix = if @lastCid? then cid+': ' else ''
 			for topic in sortedData
 				console.log 'cid:',cid,'category_id',topic.category_id
@@ -193,7 +201,7 @@ dojo.declare(
 				$(@mainTemp).empty()
 				new app.TopicUnit(
 					topic: topic,
-					posts: posts,
+					posts: posts
 				).placeAt(@mainTemp).startup()
 				# $(@mainTemp).fadeIn(100, ->dojo.publish('app/App/layerFadeOut'))
 				$(@mainTemp).fadeIn(100)
@@ -215,5 +223,26 @@ dojo.declare(
 						console.log 'error: there is no topic (topic_id:'+topic_id+')'
 						dojo.publish('app/Hash/changeHash', [tid:null])
 						# dojo.publish('app/App/layerFadeOut')
+
+	getCheckedPost: ->
+		@_getCheckedPost {}, (posts)->
+			console.log posts
+			func = =>
+				$(@mainTemp).empty()
+				new app.TopicUnit(
+					topic: {
+						title: 'Checked Post',
+						description: '',
+						type: 'check'
+					},
+					posts: posts,
+				).placeAt(@mainTemp).startup()
+				$(@mainTemp).fadeIn(100)
+			if $(@mainTop).css('display') == 'block'
+				$(@mainTop).fadeOut 100, =>func()
+			else if $(@mainTemp).css('display') == 'block'
+				$(@mainTemp).fadeOut 100, =>func()
+
+
 
 )
