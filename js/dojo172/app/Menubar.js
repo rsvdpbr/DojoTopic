@@ -14,73 +14,10 @@ dojo.declare('app.Menubar', [dijit._Widget, dijit._Templated, app.Common], {
   app: 'app.Menubar',
   widgetsInTemplate: true,
   templateString: dojo.cache('app', "templates/Menubar.html"),
-  buttons: {},
-  contents: {
-    topic: {
-      label: 'トピック掲示板',
-      icon: 'dijitIcon dijitIconUndo'
-    }
-  },
-  userData: null,
   constructor: function() {
     return this.inherited(arguments);
   },
   postCreate: function() {
-    this.setButtons();
-    this.setSubscribe();
-    return dojo.publish('app/Hash/addCallback', ['app/Menubar/onHashChange']);
-  },
-  setButtons: function() {
-    var button, key, value, _ref, _ref1, _results;
-    _ref = this.contents;
-    for (key in _ref) {
-      value = _ref[key];
-      this.buttons[key] = new app.MenubarButton({
-        label: value.label,
-        iconClass: value.icon,
-        style: 'cursor:pointer;'
-      }).placeAt(this.buttonSpace);
-    }
-    _ref1 = this.buttons;
-    _results = [];
-    for (key in _ref1) {
-      button = _ref1[key];
-      _results.push(dojo.connect(button, 'onClick', this, (function() {
-        var _key;
-        _key = key;
-        return function() {
-          return dojo.publish('app/Hash/changeHash', [
-            {
-              mode: _key
-            }
-          ]);
-        };
-      })()));
-    }
-    return _results;
-  },
-  setSubscribe: function() {
-    var h, handles;
-    handles = [];
-    handles.push(dojo.subscribe('app/Menubar/onHashChange', this, this.onHashChange));
-    return h = dojo.connect(this, 'uninitialize', this, function() {
-      var handle, _i, _len, _results;
-      dojo.disconnect(h);
-      _results = [];
-      for (_i = 0, _len = handles.length; _i < _len; _i++) {
-        handle = handles[_i];
-        _results.push(dojo.unsubscribe(handle));
-      }
-      return _results;
-    });
-  },
-  onHashChange: function(hash) {
-    var button, key, _ref;
-    _ref = this.buttons;
-    for (key in _ref) {
-      button = _ref[key];
-      button.setColorType('normal');
-    }
-    return this.buttons[hash.mode].setColorType('selected');
+    return this.inherited(arguments);
   }
 });
