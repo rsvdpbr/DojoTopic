@@ -10,11 +10,6 @@ dojo.declare("app.Hash", [app.Common], {
   hash: null,
   constructor: function() {
     this.inherited(arguments);
-    if (dojo.hash() === '') {
-      this.changeHash({
-        mode: 'topic'
-      });
-    }
     return this.setSubscribe();
   },
   setSubscribe: function() {

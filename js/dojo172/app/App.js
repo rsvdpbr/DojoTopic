@@ -25,17 +25,18 @@ dojo.declare('app.App', [app.Common], {
   YEAR: null,
   hash: null,
   data: null,
-  mode: null,
-  components: [],
+  components: {},
   layerCount: 0,
   constructor: function(YEAR) {
+    dojo.publish('app/App/layerFadeIn');
     this.inherited(arguments);
     this.YEAR = YEAR;
     this.hash = new app.Hash();
     this.setSubscribe();
     this.setLayout();
     this.data = new app.DataManager();
-    return dojo.publish('app/Hash/addCallback', ['app/App/onHashChange']);
+    this.setContent();
+    return dojo.publish('app/App/layerFadeOut');
   },
   setLayout: function() {
     $('body').append('<div id="layer"></div>');
@@ -55,7 +56,6 @@ dojo.declare('app.App', [app.Common], {
       region: 'center',
       style: 'padding:0;border:0;'
     }));
-    this.components.innerContents = {};
     return this.components.container.startup();
   },
   setSubscribe: function() {
@@ -80,7 +80,6 @@ dojo.declare('app.App', [app.Common], {
     handles.push(dojo.subscribe('app/App/layerAllShow', this, function() {
       return $('#layerAll').show();
     }));
-    handles.push(dojo.subscribe('app/App/onHashChange', this, this.onHashChange));
     return h = dojo.connect(this, 'uninitialize', this, function() {
       var handle, _i, _len, _results;
       dojo.disconnect(h);
@@ -92,27 +91,16 @@ dojo.declare('app.App', [app.Common], {
       return _results;
     });
   },
-  onHashChange: function(hash) {
+  setContent: function() {
     var obj;
-    if (this.mode === hash.mode) {
-      return false;
-    }
-    this.mode = hash.mode;
-    dojo.publish('app/App/layerFadeIn');
-    if (!(this.components.innerContents[hash.mode] != null)) {
-      obj = {
-        page: hash.mode,
-        region: 'center',
-        gBorder: 'border:1px #ccccdc solid;',
-        gBackground: 'background:#fdfdfe;'
-      };
-      if (hash.mode === 'topic') {
-        this.components.innerContents[hash.mode] = new app.Topic(obj);
-      }
-      this.components.contents.addChild(this.components.innerContents[hash.mode]);
-    }
-    this.components.contents.selectChild(this.components.innerContents[hash.mode]);
-    this.components.innerContents[hash.mode].border.resize();
-    return dojo.publish('app/App/layerFadeOut');
+    obj = {
+      region: 'center',
+      gBorder: 'border:1px #ccccdc solid;',
+      gBackground: 'background:#fdfdfe;'
+    };
+    this.components.innerContent = new app.Topic(obj);
+    this.components.contents.addChild(this.components.innerContent);
+    this.components.contents.selectChild(this.components.innerContent);
+    return this.components.innerContent.border.resize();
   }
 });

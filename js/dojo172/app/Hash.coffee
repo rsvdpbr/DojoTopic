@@ -13,9 +13,6 @@ dojo.declare(
 
 	constructor: ()->
 		@inherited arguments
-		# @ 各コールバックは登録時にも呼ばれるため、初期値入力では呼ばれないよう、先に初期値を設定する
-		if dojo.hash() == ''
-			@changeHash(mode:'topic')
 		@setSubscribe()
 
 	# APIをセットアップする

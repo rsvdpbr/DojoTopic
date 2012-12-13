@@ -21,17 +21,18 @@ dojo.declare(
 	YEAR: null										# 年度
 	hash: null										# ハッシュ。sub-pubで扱う
 	data: null										# データクラス
-	mode: null										# 現在のモード
-	components: []								# 要素リスト
+	components: {}								# 要素リスト
 	layerCount: 0									# レイヤーカウンタ
 	constructor: (YEAR)->
+		dojo.publish('app/App/layerFadeIn')
 		@inherited arguments
 		@YEAR = YEAR
 		@hash = new app.Hash()
 		@setSubscribe()
 		@setLayout()
 		@data = new app.DataManager()
-		dojo.publish('app/Hash/addCallback', ['app/App/onHashChange'])
+		@setContent()
+		dojo.publish('app/App/layerFadeOut')
 
 	# 画面をセットアップする
 	setLayout:->
@@ -53,7 +54,7 @@ dojo.declare(
 				style: 'z-index:10;'
 			)
 		)
-		# @ コンテンツ部作成
+		# @ コンテンツ格納部作成
 		@components.container.addChild(
 			@components.contents = new dijit.layout.StackContainer(
 				id: 'contents'
@@ -62,8 +63,7 @@ dojo.declare(
 				# style: 'padding:2px 6px 6px;'
 			)
 		)
-		# コンテンツ格納ハッシュ
-		@components.innerContents = {}
+
 		# @ スタートアップ
 		@components.container.startup()
 
@@ -84,31 +84,21 @@ dojo.declare(
 			$('#layerAll').hide()
 		handles.push dojo.subscribe 'app/App/layerAllShow', @, ->
 			$('#layerAll').show()
-		handles.push dojo.subscribe('app/App/onHashChange', @, @onHashChange)
 		h = dojo.connect(@, 'uninitialize', @, ->
 			dojo.disconnect(h)
 			for handle in handles
 				dojo.unsubscribe(handle)
 		)
 
-	# ハッシュ更新時にコールされる
-	onHashChange: (hash)->
-		if @mode == hash.mode then return false
-		@mode = hash.mode
-		dojo.publish('app/App/layerFadeIn')
-		# 未ロードの場合、新規作成
-		if !@components.innerContents[hash.mode]?
-			obj =
-				page: hash.mode
-				region: 'center'
-				gBorder: 'border:1px #ccccdc solid;'
-				gBackground: 'background:#fdfdfe;'
-			if hash.mode == 'topic'
-				@components.innerContents[hash.mode] = new app.Topic(obj)
-			@components.contents.addChild(@components.innerContents[hash.mode])
-		# 表示
-		@components.contents.selectChild(@components.innerContents[hash.mode])
-		@components.innerContents[hash.mode].border.resize()
-		dojo.publish('app/App/layerFadeOut')
+	# BBSコンテンツを作成
+	setContent:->
+		obj =
+			region: 'center'
+			gBorder: 'border:1px #ccccdc solid;'
+			gBackground: 'background:#fdfdfe;'
+		@components.innerContent = new app.Topic(obj)
+		@components.contents.addChild(@components.innerContent)
+		@components.contents.selectChild(@components.innerContent)
+		@components.innerContent.border.resize()
 
 )
