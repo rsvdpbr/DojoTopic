@@ -4,10 +4,27 @@ class Topic {
 	
 	private $DBClass = null;
 	private $JSON = null;
+	private $availableMethods = array( /* 糞冗長 */
+		'getCategoryList',
+		'getTopicList',
+		'getPost',
+		'setPostCheck',
+		'getPostCheck',
+		'getPostCount',
+		'savePost',
+	);
 
 	function __construct(){
 		$this->DBClass = new DatabaseAccess();
 		$this->JSON = new Services_JSON;
+	}
+
+	function isAvailable($method){
+		if(in_array($method, $this->availableMethods)){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	function getCategoryList(){

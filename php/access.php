@@ -16,10 +16,6 @@ switch($_POST['class']){
 		require_once './Topic.class.php';
 		$main = new Topic();
 		break;
-	case 'login':
-		require_once './Login.class.php';
-		$main = new Login();
-		break;
 	default:
 		exit;
 }
@@ -28,7 +24,7 @@ switch($_POST['class']){
 // @ call method
 $method = $_POST['method'];
 $value = isset($_POST['value']) && !empty($_POST['value']) ? $_POST['value'] : null;
-if(is_callable(array($main, $method))){
+if(is_callable(array($main, $method)) && $main->isAvailable($method)){
 	if($value){
 		$data = $main->{$method}($value);
 	}else{
@@ -39,7 +35,7 @@ if(is_callable(array($main, $method))){
 	$data = $json->encode($data);
 	echo $data;
 }else{
-	echo 'the method "'.$method.'" is not found';
+	echo 'the method "'.$method.'" is not found or available';
 }
 exit;
 
