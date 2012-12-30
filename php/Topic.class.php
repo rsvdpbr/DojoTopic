@@ -9,7 +9,7 @@ class Topic {
 		'getTopicList',
 		'getPost',
 		'setPostCheck',
-		'getPostCheck',
+		'getCheckedPost',
 		'getPostCount',
 		'savePost',
 	);
