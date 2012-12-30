@@ -41,6 +41,7 @@ dojo.declare('app.App', [app.Common], {
   setLayout: function() {
     $('body').append('<div id="layer"></div>');
     $('body').append('<div id="layerAll"></div>');
+    this.layerCount = 1;
     $('body').append('<div id="container"></div>');
     this.components.container = new dijit.layout.BorderContainer({
       design: 'headeline',

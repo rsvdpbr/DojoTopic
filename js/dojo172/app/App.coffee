@@ -40,6 +40,7 @@ dojo.declare(
 		# レイヤーの作成
 		$('body').append('<div id="layer"></div>')
 		$('body').append('<div id="layerAll"></div>')
+		@layerCount = 1;
 		# コンテンツルートの作成
 		$('body').append('<div id="container"></div>')
 		@components.container = new dijit.layout.BorderContainer(
