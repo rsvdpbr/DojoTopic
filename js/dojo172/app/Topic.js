@@ -89,7 +89,7 @@ dojo.declare('app.Topic', [dijit._Widget, dijit._Templated, app.Common], {
   createMain: function() {
     return new app.Div({
       topic: 'トピック掲示板',
-      body: '',
+      body: 'Dojo Toolkitを利用して開発された簡易掲示板です。<br />元々、Dojoの学習のために作られたものであるため、セキュリティ等は一切考慮されていません。<br>なお、カテゴリーおよびトピックの作成機能は未実装です。',
       toggle: true
     }).placeAt(this.mainTop).startup();
   },
@@ -129,11 +129,6 @@ dojo.declare('app.Topic', [dijit._Widget, dijit._Templated, app.Common], {
         label: "カテゴリー",
         popup: pCategory
       }));
-      menubar.addChild(new dijit.PopupMenuBarItem({
-        type: 'log',
-        label: "過去ログ取得",
-        popup: new dijit.DropDownMenu()
-      }));
       menubar.placeAt(this.inner_menu_menubar.domNode);
       func = function(data) {
         if (data.type === 'top') {
@@ -146,12 +141,6 @@ dojo.declare('app.Topic', [dijit._Widget, dijit._Templated, app.Common], {
           return this.setAcMenuTree();
         } else if (data.type === 'category') {
           return this.setAcMenuTree(data.cid);
-        } else if (data.type === 'log') {
-          return this._getTopicList({
-            page: ++this.nowPage
-          }, function() {
-            return this.setAcMenuTree(this.lastCid);
-          });
         }
       };
       dojo.connect(menubar, 'onItemClick', this, func);

@@ -73,7 +73,7 @@ dojo.declare(
 		# top
 		new app.Div(
 			topic: 'トピック掲示板'
-			body: ''
+			body: 'Dojo Toolkitを利用して開発された簡易掲示板です。<br />元々、Dojoの学習のために作られたものであるため、セキュリティ等は一切考慮されていません。<br>なお、カテゴリーおよびトピックの作成機能は未実装です。'
 			toggle: true
 		).placeAt(@mainTop).startup()
 
@@ -110,11 +110,6 @@ dojo.declare(
 				label: "カテゴリー",
 				popup: pCategory
 			))
-			menubar.addChild(new dijit.PopupMenuBarItem(
-				type: 'log'
-				label: "過去ログ取得",
-				popup: new dijit.DropDownMenu()
-			))
 			menubar.placeAt(@inner_menu_menubar.domNode)
 			# イベントを付与する
 			func = (data)->
@@ -124,8 +119,6 @@ dojo.declare(
 					@setAcMenuTree()
 				else if data.type == 'category'
 					@setAcMenuTree(data.cid)
-				else if data.type == 'log'
-					@_getTopicList({page:++@nowPage}, ->@setAcMenuTree(@lastCid))
 			dojo.connect(menubar, 'onItemClick', @, func)
 			dojo.connect(pCategory, 'onItemClick', @, func)
 			@inner_menu.resize()
@@ -133,7 +126,7 @@ dojo.declare(
 	setAcMenuTree: (cid)->
 		# dojo.publish('app/App/layerFadeIn')
 		@lastCid = cid
-		@inner_menu_tree.destroyDescendants()
+		@inner_menu_tree.destroyDescendants() # なんだっけこれ
 		@_getTable 'topic', null, (data)->
 			# データを整形する
 			originalData = dojo.clone(data)
@@ -143,7 +136,7 @@ dojo.declare(
 					originalData[key].last_update = '000000/00 00:00:00'
 				else
 					originalData[key].last_update = originalData[key].last_update.split('-').join('/')
-			while(1)
+			while(1)									# なんかこのあたり怪しいことやってる気がする
 				lastKey = 0
 				lastDatetime = '0000/00/00 00:00:00'
 				for key,value of originalData
